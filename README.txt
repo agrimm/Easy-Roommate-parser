@@ -19,6 +19,11 @@ Parse Easy roommate's data, to make it easier to find relevant entries.
 
 * Having bugs would imply the script is useful. It isn't at that stage yet.
 
+== CONTACT:
+
+* http://au.easyroommate.com/sydney-share-accommodation/want-to-live-near-unsw-and-city/L100702201156254/201007022011561763
+* Oh, you meant about the software? Try github, or tweet me at @andrewjgrimm
+
 == LICENSE:
 
 (The MIT License)
