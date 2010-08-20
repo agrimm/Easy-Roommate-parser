@@ -1,10 +1,9 @@
 $:.push File.expand_path(File.dirname(__FILE__) + '/../lib')
 
-require "person"
-require "result_parser"
-require "nokogiri"
+require "easyroommate_parser"
 
 if __FILE__ == $0
-  result_parser = ResultParser.new(File.open(ARGV[0]))
-  puts result_parser.people.join("\n")
+  abort "#{__FILE__} search_page.html notes.rtf" if ARGV.length < 2
+  easyroommate_parser = EasyroommateParser.new_using_filenames(ARGV[0], ARGV[1])
+  easyroommate_parser.display_new_people
 end
