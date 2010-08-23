@@ -14,7 +14,10 @@ class ResultParser
       area_node = listing_node.xpath('.//tr[contains(@id, "Area")]/td').first
       area_text = area_node.content
 
-      person = Person.new(firstname_text, area_text)
+      listing_link_node = listing_node.xpath('.//a[contains(@id, "ViewProfileLink")]').first
+      listing_link_text = listing_link_node["href"]
+
+      person = Person.new(firstname_text, area_text, listing_link_text)
       person
     end
     actual_people = possible_people.reject(&:actually_an_apartment?)
