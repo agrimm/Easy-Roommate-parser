@@ -66,16 +66,16 @@ class Listing
     @existing_flatmates = existing_flatmates
   end
 
-  def genders_allowed_include?(gender)
-    @preferred_flatmate.genders_allowed_include?(gender)
+  def genders_preferred_include?(gender)
+    @preferred_flatmate.genders_preferred_include?(gender)
   end
 
   def genders_existing_include?(gender)
-    @existing_flatmates.genders_allowed_include?(gender)
+    @existing_flatmates.genders_include?(gender)
   end
 
-  def ages_allowed_include?(age)
-    @preferred_flatmate.ages_allowed_include?(age)
+  def ages_preferred_include?(age)
+    @preferred_flatmate.ages_preferred_include?(age)
   end
 
 end
@@ -87,11 +87,11 @@ class Listing::PreferredFlatmate
     raise "Invalid genders in #{@preferred_genders.inspect}" unless (@preferred_genders - [:male, :female]).empty?
   end
 
-  def genders_allowed_include?(gender)
+  def genders_preferred_include?(gender)
     @preferred_genders.include?(gender)
   end
 
-  def ages_allowed_include?(age)
+  def ages_preferred_include?(age)
     @preferred_ages.include?(age)
   end
 
@@ -103,7 +103,7 @@ class Listing::ExistingFlatmates
     @existing_genders = existing_genders
   end
 
-  def genders_allowed_include?(gender)
+  def genders_include?(gender)
     @existing_genders.include?(gender)
   end
 

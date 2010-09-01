@@ -5,8 +5,8 @@ describe "Listing" do
 
   it "should determine the genders wanted" do
     listing = Listing.new_using_filename("real_data/listing_1.html")
-    listing.genders_allowed_include?(:male).should be_false
-    listing.genders_allowed_include?(:female).should be_true
+    listing.genders_preferred_include?(:male).should be_false
+    listing.genders_preferred_include?(:female).should be_true
   end
 
   it "should know the gender of existing flatmates" do
@@ -18,7 +18,7 @@ describe "Listing" do
 
   it "should know the age wanted" do
     listing = Listing.new_using_filename("real_data/listing_1.html")
-    listing.ages_allowed_include?(99).should be_true
-    listing.ages_allowed_include?(100).should be_false
+    listing.ages_preferred_include?(99).should be_true
+    listing.ages_preferred_include?(100).should be_false
   end
 end
