@@ -78,6 +78,15 @@ class Listing
     @preferred_flatmate.ages_preferred_include?(age)
   end
 
+  # Ideally, this should use something like ActiveModel rather than hand-rolling a list of validations
+  def incompatibility_messages_for_searcher(searcher)
+    messages = []
+    messages << "Searcher gender is #{searcher.gender} when the listing prefers someone #{@preferred_flatmate.genders.join}" unless genders_preferred_include?(searcher.gender)
+    messages << "Searcher age is #{searcher.age} when the listing prefers ages #{@preferred_flatmate.ages_preferred_as_string}" unless ages_preferred_include?(searcher.age)
+    messages << "Existing flatmates are all #{@existing_flatmates.genders.join} when you want at least one #{searcher.desired_genders.join} flatmate" if (searcher.desired_genders & @existing_flatmates.genders).empty?
+    messages
+  end
+
 end
 
 class Listing::PreferredFlatmate
@@ -95,9 +104,20 @@ class Listing::PreferredFlatmate
     @preferred_ages.include?(age)
   end
 
+  def ages_preferred_as_string
+    [@preferred_ages.first, "to", @preferred_ages.last].join(" ")
+  end
+
+  def genders
+    @preferred_genders
+  end
+
 end
 
 class Listing::ExistingFlatmates
+  def genders
+    @existing_genders
+  end
 
   def initialize(existing_genders)
     @existing_genders = existing_genders
