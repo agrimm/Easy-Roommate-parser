@@ -13,7 +13,9 @@ class ListingParser
     @document = Nokogiri::HTML(listing_file)
     preferred_flatmate_genders = determine_preferred_flatmate_genders
     preferred_flatmate = Listing::PreferredFlatmate.new(preferred_flatmate_genders)
-    @listing = Listing.new(preferred_flatmate)
+    existing_flatmate_genders = determine_existing_flatmate_genders
+    existing_flatmates = Listing::ExistingFlatmates.new(existing_flatmate_genders)
+    @listing = Listing.new(preferred_flatmate, existing_flatmates)
   end
 
   def determine_preferred_flatmate_genders
@@ -26,6 +28,19 @@ class ListingParser
     else raise "Unexpected scenario"
     end
   end
+
+  def determine_existing_flatmate_genders
+    # Much of this is copy and pasted from determine_preferred_flatmate_genders
+    gender_info_nodes = @document.xpath('.//tr[contains(@id, "IndividualGenderInfo")]/td')
+    gender_info_contents = gender_info_nodes.map(&:content)
+    listing_flatmate_gender = case gender_info_contents[0]
+      when "Female" then :female
+      when "Male" then :male
+      else raise "Untested scenario"
+    end
+    # Fixme: doesn't look at other flatmates yet
+    [listing_flatmate_gender]
+  end
 end
 
 class Listing
@@ -34,13 +49,19 @@ class Listing
     listing_parser.listing
   end
 
-  def initialize(preferred_flatmate)
+  def initialize(preferred_flatmate, existing_flatmates)
     @preferred_flatmate = preferred_flatmate
+    @existing_flatmates = existing_flatmates
   end
 
   def genders_allowed_include?(gender)
     @preferred_flatmate.genders_allowed_include?(gender)
   end
+
+  def genders_existing_include?(gender)
+    @existing_flatmates.genders_allowed_include?(gender)
+  end
+
 end
 
 class Listing::PreferredFlatmate
@@ -52,4 +73,16 @@ class Listing::PreferredFlatmate
   def genders_allowed_include?(gender)
     @preferred_genders.include?(gender)
   end
+end
+
+class Listing::ExistingFlatmates
+
+  def initialize(existing_genders)
+    @existing_genders = existing_genders
+  end
+
+  def genders_allowed_include?(gender)
+    @existing_genders.include?(gender)
+  end
+
 end
