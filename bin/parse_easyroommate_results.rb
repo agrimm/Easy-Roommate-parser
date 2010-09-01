@@ -1,5 +1,6 @@
 $:.push File.expand_path(File.dirname(__FILE__) + '/../lib')
 
+require "yaml"
 require "easyroommate_parser"
 
 if __FILE__ == $0

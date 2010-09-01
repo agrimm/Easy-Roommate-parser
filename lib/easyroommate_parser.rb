@@ -27,7 +27,7 @@ class EasyroommateParser
   end
 
   def export_undownloaded_people
-    raise "File already exists" if File.exist?(UNDOWNLOADED_PEOPLE_FILENAME)
+    raise "File #{UNDOWNLOADED_PEOPLE_FILENAME} already exists" if File.exist?(UNDOWNLOADED_PEOPLE_FILENAME)
     undownloaded_people = @new_people.reject{|person| person.already_downloaded?}
     filenames_and_urls = undownloaded_people.map do |person|
       {:filename => person.download_filename, :url=> person.url}
