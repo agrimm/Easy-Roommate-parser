@@ -16,4 +16,9 @@ describe "Listing" do
     pending("should know the genders of flatmates other than the individual listing it")
   end
 
+  it "should know the age wanted" do
+    listing = Listing.new_using_filename("real_data/listing_1.html")
+    listing.ages_allowed_include?(99).should be_true
+    listing.ages_allowed_include?(100).should be_false
+  end
 end

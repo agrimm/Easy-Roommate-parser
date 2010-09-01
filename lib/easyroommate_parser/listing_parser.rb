@@ -12,7 +12,8 @@ class ListingParser
   def initialize(listing_file)
     @document = Nokogiri::HTML(listing_file)
     preferred_flatmate_genders = determine_preferred_flatmate_genders
-    preferred_flatmate = Listing::PreferredFlatmate.new(preferred_flatmate_genders)
+    preferred_flatmate_ages = determine_preferred_flatmate_ages
+    preferred_flatmate = Listing::PreferredFlatmate.new(preferred_flatmate_genders, preferred_flatmate_ages)
     existing_flatmate_genders = determine_existing_flatmate_genders
     existing_flatmates = Listing::ExistingFlatmates.new(existing_flatmate_genders)
     @listing = Listing.new(preferred_flatmate, existing_flatmates)
@@ -41,6 +42,17 @@ class ListingParser
     # Fixme: doesn't look at other flatmates yet
     [listing_flatmate_gender]
   end
+
+  def determine_preferred_flatmate_ages
+    age_info_nodes = @document.xpath('.//tr[contains(@id, "IndividualAgeInfo")]/td')
+    age_info_contents = age_info_nodes.map(&:content)
+    preferred_flatmate_age_info_content = age_info_contents[1]
+    preferred_flatmate_ages_regexp = /from (\d+) to (\d+) yrs. old/
+    match = preferred_flatmate_ages_regexp.match(preferred_flatmate_age_info_content)
+    preferred_flatmate_ages = Range.new(Integer(match[1]), Integer(match[2]), false)
+    preferred_flatmate_ages
+  end
+
 end
 
 class Listing
@@ -62,17 +74,27 @@ class Listing
     @existing_flatmates.genders_allowed_include?(gender)
   end
 
+  def ages_allowed_include?(age)
+    @preferred_flatmate.ages_allowed_include?(age)
+  end
+
 end
 
 class Listing::PreferredFlatmate
-  def initialize(preferred_genders)
+  def initialize(preferred_genders, preferred_ages)
     @preferred_genders = preferred_genders
+    @preferred_ages = preferred_ages
     raise "Invalid genders in #{@preferred_genders.inspect}" unless (@preferred_genders - [:male, :female]).empty?
   end
 
   def genders_allowed_include?(gender)
     @preferred_genders.include?(gender)
   end
+
+  def ages_allowed_include?(age)
+    @preferred_ages.include?(age)
+  end
+
 end
 
 class Listing::ExistingFlatmates
