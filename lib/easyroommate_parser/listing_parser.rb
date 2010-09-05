@@ -30,12 +30,16 @@ class ListingParser
     gender_info_nodes = @document.xpath('.//tr[contains(@id, "IndividualGenderInfo")]/td')
     gender_info_contents = gender_info_nodes.map(&:content)
     listing_flatmate_gender_string = gender_info_contents[0]
+    gender_strings = [listing_flatmate_gender_string]
     # The website doesn't provide direct metadata on which node has the gender information of the whole household
     # The following SO question may help, but it sounds a little complicated
     # http://stackoverflow.com/questions/1968641/xpath-html-select-node-based-on-related-node
-    household_gender_info_node = @document.xpath('.//table[contains(@id, "HouseholdInfoTable")]/tr[7]/td')
-    household_gender_string = household_gender_info_node.first.content
-    Listing::Genders.new_using_strings([listing_flatmate_gender_string, household_gender_string])
+    household_gender_info_nodes = @document.xpath('.//table[contains(@id, "HouseholdInfoTable")]/tr[7]/td')
+    unless household_gender_info_nodes.empty?
+      household_gender_string = household_gender_info_nodes.first.content
+      gender_strings = [listing_flatmate_gender_string, household_gender_string]
+    end
+    Listing::Genders.new_using_strings(gender_strings)
   end
 
   def determine_preferred_flatmate_ages

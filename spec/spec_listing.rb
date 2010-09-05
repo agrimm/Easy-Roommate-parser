@@ -37,6 +37,10 @@ describe "Listing" do
   # # and the gender of the household is Not Disclosed
   LISTING_3_FILENAME = "real_data/listing_3.html"
 
+  # Properties of listing 4:
+  # # There is no-one but the lister currently living there
+  LISTING_4_FILENAME = "real_data/listing_4.html"
+
   def create_searcher(searcher_gender, searcher_age, searcher_desired_genders)
     searcher = Searcher.new(searcher_gender, searcher_age, searcher_desired_genders)
   end
@@ -68,6 +72,10 @@ describe "Listing" do
     listing = Listing.new_using_filename(LISTING_3_FILENAME)
     listing.genders_existing_include?(:male).should == true
     listing.genders_existing_include?(:female).should == UNKNOWN
+  end
+
+  it "should not have an exception when the lister is the only person living there" do
+    listing = Listing.new_using_filename(LISTING_4_FILENAME)
   end
 
   it "should know the age wanted" do
