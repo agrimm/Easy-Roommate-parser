@@ -22,8 +22,7 @@ class ListingParser
   def determine_preferred_flatmate_genders
     gender_info_nodes = @document.xpath('.//tr[contains(@id, "IndividualGenderInfo")]/td')
     gender_info_contents = gender_info_nodes.map(&:content)
-    raise NotImplementedError if gender_info_contents[1] == "Doesn't matter"
-    preferred_flatmate_genders = Listing::Genders.new_using_strings(gender_info_contents[1]) #Incomplete implementation
+    preferred_flatmate_genders = Listing::Genders.new_using_strings(gender_info_contents[1])
   end
 
   def determine_existing_flatmate_genders
@@ -66,6 +65,8 @@ class Listing
     @preferred_flatmate.genders_preferred_include?(gender)
   end
 
+  # Returns true when it's definitely true, UNKNOWN when it's not known, and false when it's definitely false
+  # Warning: possesses truthiness even when UNKNOWN
   def genders_existing_include?(gender)
     @existing_flatmates.genders_include?(gender)
   end
@@ -121,6 +122,8 @@ class Listing::ExistingFlatmates
     @existing_genders = existing_genders
   end
 
+  # Returns true when it's definitely true, UNKNOWN when it's not known, and false when it's definitely false
+  # Warning: possesses truthiness even when UNKNOWN
   def genders_include?(gender)
     @existing_genders.include?(gender)
   end
@@ -137,6 +140,8 @@ class Listing::Genders
       when "Male" then result + [:male]
       when "Female" then result + [:female]
       when "Mixed" then result + [:male, :female]
+      when "Doesn't Matter" then result + [:male, :female]
+      when "Not Disclosed" then result + [:unknown]
       else raise "Can't handle #{string}"
       end
     end
@@ -148,8 +153,14 @@ class Listing::Genders
     @genders = genders
   end
 
+  # Returns true when it's definitely true, UNKNOWN when it's not known, and false when it's definitely false
+  # Warning: possesses truthiness even when UNKNOWN
   def include?(gender)
-    @genders.include?(gender)
+    case
+    when @genders.include?(gender) == true then return true
+    when @genders.include?(:unknown) then return UNKNOWN
+    else return false
+    end
   end
 
   def as_string
