@@ -22,25 +22,17 @@ class ListingParser
   def determine_preferred_flatmate_genders
     gender_info_nodes = @document.xpath('.//tr[contains(@id, "IndividualGenderInfo")]/td')
     gender_info_contents = gender_info_nodes.map(&:content)
-    preferred_flatmate_genders = case gender_info_contents[1]
-    when "Male" then [:male]
-    when "Female" then [:female]
-    when "Doesn't Matter" then [:male, :female]
-    else raise "Unexpected scenario"
-    end
+    raise NotImplementedError if case gender_info_contents[1] == "Doesn't matter"
+    preferred_flatmate_genders = Listing::Genders.new_using_strings(gender_info_contents[1]) #Incomplete implementation
   end
 
   def determine_existing_flatmate_genders
     # Much of this is copy and pasted from determine_preferred_flatmate_genders
     gender_info_nodes = @document.xpath('.//tr[contains(@id, "IndividualGenderInfo")]/td')
     gender_info_contents = gender_info_nodes.map(&:content)
-    listing_flatmate_gender = case gender_info_contents[0]
-      when "Female" then :female
-      when "Male" then :male
-      else raise "Untested scenario"
-    end
+    listing_flatmate_gender_string = gender_info_contents[0]
     # Fixme: doesn't look at other flatmates yet
-    [listing_flatmate_gender]
+    Listing::Genders.new_using_strings([listing_flatmate_gender_string])
   end
 
   def determine_preferred_flatmate_ages
@@ -81,9 +73,9 @@ class Listing
   # Ideally, this should use something like ActiveModel rather than hand-rolling a list of validations
   def incompatibility_messages_for_searcher(searcher)
     messages = []
-    messages << "Searcher gender is #{searcher.gender} when the listing prefers someone #{@preferred_flatmate.genders.join}" unless genders_preferred_include?(searcher.gender)
+    messages << "Searcher gender is #{searcher.gender} when the listing prefers someone #{@preferred_flatmate.genders_as_string}" unless genders_preferred_include?(searcher.gender)
     messages << "Searcher age is #{searcher.age} when the listing prefers ages #{@preferred_flatmate.ages_preferred_as_string}" unless ages_preferred_include?(searcher.age)
-    messages << "Existing flatmates are all #{@existing_flatmates.genders.join} when you want at least one #{searcher.desired_genders.join} flatmate" if (searcher.desired_genders & @existing_flatmates.genders).empty?
+    messages << "Existing flatmates are all #{@existing_flatmates.genders_as_string} when you want at least one #{searcher.desired_genders.join} flatmate" unless (searcher.genders_desired_include?(@existing_flatmates.genders))
     messages
   end
 
@@ -93,7 +85,6 @@ class Listing::PreferredFlatmate
   def initialize(preferred_genders, preferred_ages)
     @preferred_genders = preferred_genders
     @preferred_ages = preferred_ages
-    raise "Invalid genders in #{@preferred_genders.inspect}" unless (@preferred_genders - [:male, :female]).empty?
   end
 
   def genders_preferred_include?(gender)
@@ -112,6 +103,9 @@ class Listing::PreferredFlatmate
     @preferred_genders
   end
 
+  def genders_as_string
+    @preferred_genders.as_string
+  end
 end
 
 class Listing::ExistingFlatmates
@@ -127,4 +121,32 @@ class Listing::ExistingFlatmates
     @existing_genders.include?(gender)
   end
 
+  def genders_as_string
+    @existing_genders.as_string
+  end
+end
+
+class Listing::Genders
+  def self.new_using_strings(strings)
+    genders = strings.map do |string|
+      case string
+      when "Male" then :male
+      when "Female" then :female
+      else raise
+      end
+    end
+    new(genders)
+  end
+
+  def initialize(genders)
+    @genders = genders
+  end
+
+  def include?(gender)
+    @genders.include?(gender)
+  end
+
+  def as_string
+    @genders.join(", ")
+  end
 end
