@@ -1,11 +1,16 @@
+require "ternary_logic"
 require "nokogiri"
 
 class ListingParser
   attr_reader :listing
 
   def self.new_using_filename(listing_filename)
-    File.open(listing_filename) do |listing_file|
-      return new(listing_file)
+    begin
+      File.open(listing_filename) do |listing_file|
+        return new(listing_file)
+      end
+    rescue
+      raise $!, "Problem with file #{listing_filename}: #{$!}"
     end
   end
 

@@ -1,25 +1,6 @@
-require "ternary_logic"
-
 $:.push File.expand_path(File.dirname(__FILE__) + '/../lib/easyroommate_parser')
 require "listing_parser"
-
-# The following class isn't really fully fleshed out yet, so that's why it's in the test section
-
-class Searcher
-  attr_reader :gender, :age, :desired_genders
-
-  def initialize(searcher_gender, searcher_age, searcher_desired_genders)
-    @gender, @age, @desired_genders = searcher_gender, searcher_age, searcher_desired_genders
-  end
-
-  def genders_desired_include?(existing_genders)
-    # Possibly hackish implementation
-    @desired_genders.any? do |desired_gender|
-      existing_genders.include?(desired_gender)
-    end
-  end
-end
-
+require "searcher"
 
 describe "Listing" do
   # Properties of listing 1:

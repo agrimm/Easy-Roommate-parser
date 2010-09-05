@@ -2,6 +2,9 @@ $:.push File.expand_path(File.dirname(__FILE__) + '/easyroommate_parser')
 require "person"
 require "result_parser"
 require "notes_parser"
+require "searcher"
+require "listing_parser"
+
 require "nokogiri"
 
 class EasyroommateParser
