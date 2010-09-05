@@ -9,4 +9,5 @@ if __FILE__ == $0
   easyroommate_parser.display_new_people
   easyroommate_parser.display_undownloaded_people
   easyroommate_parser.export_undownloaded_people
+  easyroommate_parser.display_suitability_of_new_people
 end

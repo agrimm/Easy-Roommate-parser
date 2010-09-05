@@ -34,6 +34,7 @@ class EasyroommateParser
   end
 
   def export_undownloaded_people
+    return if @undownloaded_people.empty?
     raise "File #{UNDOWNLOADED_PEOPLE_FILENAME} already exists" if File.exist?(UNDOWNLOADED_PEOPLE_FILENAME)
     filenames_and_urls = @undownloaded_people.map do |person|
       {:filename => person.download_filename, :url=> person.url}
@@ -42,4 +43,22 @@ class EasyroommateParser
       YAML.dump(filenames_and_urls, undownloaded_people_file)
     end
   end
+
+  def display_suitability_of_new_people
+    searcher = Searcher.new(:male, 31, [:female]) # Fixme: make this configurable by 2011
+    new_people_and_listings = @new_people.map {|new_person| [new_person, Listing.new_using_filename(new_person.download_filename)]}
+    suitable_people_and_listings, less_suitable_people_and_listings = new_people_and_listings.partition {|person, listing| listing.incompatibility_messages_for_searcher(searcher).empty?}
+    puts "SUITABLE PEOPLE:\n\n"
+    suitable_people_and_listings.each do |person, listing|
+      puts person.to_s
+      puts
+    end
+    puts "\n\nLESS SUITABLE PEOPLE:\n\n"
+    less_suitable_people_and_listings.each do |person, listing|
+      puts person.to_s
+      puts listing.incompatibility_messages_for_searcher(searcher).join("\n")
+      puts
+    end
+  end
+
 end
