@@ -1,0 +1,4 @@
+---
+#Copy this to account.yml, and set the following fields to your email and your password
+txtemail: name@example.com
+txtpassword: insert_your_real_password_not_mine_here

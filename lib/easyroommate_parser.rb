@@ -19,17 +19,20 @@ class EasyroommateParser
     @result_parser = ResultParser.new(results_file)
     @notes_parser = NotesParser.new(notes_file)
     @new_people = @notes_parser.reject_existing_people(@result_parser.people)
+    @undownloaded_people = @new_people.reject{|person| person.already_downloaded?}
   end
 
   def display_new_people
-    puts "People so far not listed\n\n"
-    puts @new_people.join("\n")
+    puts "#{@new_people.length} people so far not listed in your notes"
+  end
+
+  def display_undownloaded_people
+    puts "#{@undownloaded_people.length} people so far not downloaded to be parsed by this program"
   end
 
   def export_undownloaded_people
     raise "File #{UNDOWNLOADED_PEOPLE_FILENAME} already exists" if File.exist?(UNDOWNLOADED_PEOPLE_FILENAME)
-    undownloaded_people = @new_people.reject{|person| person.already_downloaded?}
-    filenames_and_urls = undownloaded_people.map do |person|
+    filenames_and_urls = @undownloaded_people.map do |person|
       {:filename => person.download_filename, :url=> person.url}
     end
     File.open(UNDOWNLOADED_PEOPLE_FILENAME, "w") do |undownloaded_people_file|
