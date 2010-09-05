@@ -22,7 +22,7 @@ class ListingParser
   def determine_preferred_flatmate_genders
     gender_info_nodes = @document.xpath('.//tr[contains(@id, "IndividualGenderInfo")]/td')
     gender_info_contents = gender_info_nodes.map(&:content)
-    raise NotImplementedError if case gender_info_contents[1] == "Doesn't matter"
+    raise NotImplementedError if gender_info_contents[1] == "Doesn't matter"
     preferred_flatmate_genders = Listing::Genders.new_using_strings(gender_info_contents[1]) #Incomplete implementation
   end
 
@@ -31,8 +31,12 @@ class ListingParser
     gender_info_nodes = @document.xpath('.//tr[contains(@id, "IndividualGenderInfo")]/td')
     gender_info_contents = gender_info_nodes.map(&:content)
     listing_flatmate_gender_string = gender_info_contents[0]
-    # Fixme: doesn't look at other flatmates yet
-    Listing::Genders.new_using_strings([listing_flatmate_gender_string])
+    # The website doesn't provide direct metadata on which node has the gender information of the whole household
+    # The following SO question may help, but it sounds a little complicated
+    # http://stackoverflow.com/questions/1968641/xpath-html-select-node-based-on-related-node
+    household_gender_info_node = @document.xpath('.//table[contains(@id, "HouseholdInfoTable")]/tr[7]/td')
+    household_gender_string = household_gender_info_node.first.content
+    Listing::Genders.new_using_strings([listing_flatmate_gender_string, household_gender_string])
   end
 
   def determine_preferred_flatmate_ages
@@ -128,13 +132,15 @@ end
 
 class Listing::Genders
   def self.new_using_strings(strings)
-    genders = strings.map do |string|
+    genders = strings.inject([]) do |result, string|
       case string
-      when "Male" then :male
-      when "Female" then :female
-      else raise
+      when "Male" then result + [:male]
+      when "Female" then result + [:female]
+      when "Mixed" then result + [:male, :female]
+      else raise "Can't handle #{string}"
       end
     end
+    genders.uniq!
     new(genders)
   end
 

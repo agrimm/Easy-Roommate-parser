@@ -26,6 +26,10 @@ describe "Listing" do
   # # Their preferred ages are 16 to 99
   LISTING_1_FILENAME = "real_data/listing_1.html"
 
+  # Properties of listing 2:
+  # # The listing flatmate is female, but the household is mixed gender
+  LISTING_2_FILENAME = "real_data/listing_2.html"
+
   def create_searcher(searcher_gender, searcher_age, searcher_desired_genders)
     searcher = Searcher.new(searcher_gender, searcher_age, searcher_desired_genders)
   end
@@ -40,8 +44,14 @@ describe "Listing" do
     listing = Listing.new_using_filename(LISTING_1_FILENAME)
     listing.genders_existing_include?(:female).should be_true
     listing.genders_existing_include?(:male).should be_false
-    pending("should know the genders of flatmates other than the individual listing it")
   end
+
+  it "should know the genders of non-listing existing flatmates" do
+    listing = Listing.new_using_filename(LISTING_2_FILENAME)
+    listing.should be_genders_existing_include(:male)
+  end
+
+  it "should handle unknown gender households"
 
   it "should know the age wanted" do
     listing = Listing.new_using_filename(LISTING_1_FILENAME)
