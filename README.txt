@@ -15,9 +15,15 @@ Parse Easy roommate's data, to make it easier to find relevant entries.
 
 * Currently not a gem
 
+== USAGE:
+
+* bin/parse_easyroommate_results.rb search_page.html notes.rtf
+* * Where search_page.html is the source of a page listing search results
+* * And notes.rtf is a plain text file containing your existing notes
+
 == CURRENT BUGS:
 
-* Having bugs would imply the script is useful. It isn't at that stage yet.
+* Listed at http://github.com/agrimm/Easy-Roommate-parser/issues
 
 == CONTACT:
 
