@@ -35,13 +35,18 @@ class EasyroommateParser
 
   def export_undownloaded_people
     return if @undownloaded_people.empty?
-    raise "File #{UNDOWNLOADED_PEOPLE_FILENAME} already exists" if File.exist?(UNDOWNLOADED_PEOPLE_FILENAME)
+    abort "File #{UNDOWNLOADED_PEOPLE_FILENAME} already exists. Please delete the file if you've downloaded the people listed in it" if File.exist?(UNDOWNLOADED_PEOPLE_FILENAME)
     filenames_and_urls = @undownloaded_people.map do |person|
       {:filename => person.download_filename, :url=> person.url}
     end
     File.open(UNDOWNLOADED_PEOPLE_FILENAME, "w") do |undownloaded_people_file|
       YAML.dump(filenames_and_urls, undownloaded_people_file)
     end
+  end
+
+  def exit_if_people_undownloaded
+    return if @undownloaded_people.empty?
+    abort "Please run bin/download_listings.rb to download new people."
   end
 
   def display_suitability_of_new_people
