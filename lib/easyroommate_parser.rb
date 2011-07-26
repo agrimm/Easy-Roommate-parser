@@ -50,7 +50,7 @@ class EasyroommateParser
   end
 
   def display_suitability_of_new_people
-    searcher = Searcher.new(:male, 31, [:female]) # Fixme: make this configurable by 2011
+    searcher = Searcher.andrew_grimm
     new_people_and_listings = @new_people.map {|new_person| [new_person, Listing.new_using_filename(new_person.download_filename)]}
     suitable_people_and_listings, less_suitable_people_and_listings = new_people_and_listings.partition {|person, listing| listing.incompatibility_messages_for_searcher(searcher).empty?}
     puts "SUITABLE PEOPLE:\n\n"

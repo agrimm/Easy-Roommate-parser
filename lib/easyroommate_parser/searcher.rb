@@ -13,4 +13,8 @@ class Searcher
       existing_genders.include?(desired_gender)
     end
   end
+
+  def self.andrew_grimm
+    new(:male, 32, [:female]) # Fixme: make this configurable by 2012
+  end
 end
