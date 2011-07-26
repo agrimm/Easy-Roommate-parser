@@ -30,7 +30,7 @@ class ListingDownloader
         puts "downloaded " + url + " at #{Time.now}" + "\n"
       end
     end
-    puts "Finished downloading. Run bin/parse_easyroomate_results.rb to evaluate the compatibility of these people."
+    puts "Finished downloading. Run bin/parse_easyroommate_results.rb to evaluate the compatibility of these people."
   end
 
   def create_agent_and_log_in

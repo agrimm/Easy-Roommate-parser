@@ -10,6 +10,7 @@ Parse Easy roommate's data, to make it easier to find relevant entries.
 == REQUIREMENTS:
 
 * Nokogiri
+* ternary_logic
 
 == INSTALL:
 
