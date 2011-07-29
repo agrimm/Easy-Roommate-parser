@@ -149,6 +149,7 @@ class Listing::Genders
       when "Male" then result + [:male]
       when "Female" then result + [:female]
       when "Mixed" then result + [:male, :female]
+      when "Couple" then result + [:male, :female] # Not unit tested
       when "Doesn't Matter" then result + [:male, :female]
       when "Not Disclosed" then result + [:unknown]
       else raise "Can't handle #{string}"
