@@ -1,5 +1,5 @@
 require "uri"
-require "rack"
+require "cgi"
 
 class Person
   attr_reader :firstname, :suburb, :url, :easyroommate_id
@@ -9,8 +9,8 @@ class Person
     @suburb = /^([^,]+),[^,]+$/.match(area)[1]
     @url = URI.join("http://au.easyroommate.com", listing_link).to_s
     query_fragment = URI.split(@url)[-2]
-    parsed_query_fragment = Rack::Utils.parse_nested_query(query_fragment)
-    @easyroommate_id = parsed_query_fragment.fetch("code")
+    parsed_query_fragment = CGI.parse(query_fragment)
+    @easyroommate_id = parsed_query_fragment.fetch("code").first
   end
 
   def to_s
