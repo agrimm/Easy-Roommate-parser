@@ -1,4 +1,5 @@
 require "uri"
+require "rack"
 
 class Person
   attr_reader :firstname, :suburb, :url
@@ -7,6 +8,9 @@ class Person
     @firstname = firstname
     @suburb = /^([^,]+),[^,]+$/.match(area)[1]
     @url = URI.join("http://au.easyroommate.com", listing_link).to_s
+    query_fragment = URI.split(@url)[-2]
+    parsed_query_fragment = Rack::Utils.parse_nested_query(query_fragment)
+    @easyroommate_id = parsed_query_fragment.fetch("code")
   end
 
   def to_s
@@ -22,7 +26,6 @@ class Person
   end
 
   def download_filename
-    escaped_firstname, escaped_suburb = [@firstname, @suburb].map{|string| string.gsub(/[^a-zA-Z]/, "")}
-    File.join("real_data","#{escaped_firstname}_of_#{escaped_suburb}.html")
+    File.join("real_data", "#{@easyroommate_id}.html")
   end
 end
