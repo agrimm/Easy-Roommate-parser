@@ -8,8 +8,7 @@ class NotesParser
     @notes_text.split("\n").each do |line|
       next unless line =~ /from|of/
       results.delete_if do |person|
-        regexp = Regexp.compile(Regexp.escape(person.firstname) + " +(from|of) +" + Regexp.escape(person.suburb), true)
-        line =~ regexp
+        line.include?(person.easyroommate_id)
       end
     end
     results

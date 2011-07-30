@@ -2,7 +2,7 @@ require "uri"
 require "rack"
 
 class Person
-  attr_reader :firstname, :suburb, :url
+  attr_reader :firstname, :suburb, :url, :easyroommate_id
 
   def initialize(firstname, area, listing_link)
     @firstname = firstname
