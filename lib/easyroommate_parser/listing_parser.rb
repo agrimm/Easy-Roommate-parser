@@ -27,7 +27,8 @@ class ListingParser
   def determine_preferred_flatmate_genders
     gender_info_nodes = @document.xpath('.//tr[contains(@id, "IndividualGenderInfo")]/td')
     gender_info_contents = gender_info_nodes.map(&:content)
-    preferred_flatmate_genders = Listing::Genders.new_using_strings(gender_info_contents[1])
+    #preferred_flatmate_genders = Listing::Genders.new_using_strings(gender_info_contents[1])
+    preferred_flatmate_genders = Listing::Genders.new_using_strings(gender_info_contents)
   end
 
   def determine_existing_flatmate_genders
