@@ -74,4 +74,8 @@ describe "Listing" do
     incompatibility_messages.should include("Existing flatmates are all female when you want at least one male flatmate")
   end
 
+  it "should know the rent of a place" do
+    listing = Listing.new_using_filename(LISTING_1_FILENAME)
+    listing.rent.should equal 260
+  end
 end

@@ -21,7 +21,8 @@ class ListingParser
     preferred_flatmate = Listing::PreferredFlatmate.new(preferred_flatmate_genders, preferred_flatmate_ages)
     existing_flatmate_genders = determine_existing_flatmate_genders
     existing_flatmates = Listing::ExistingFlatmates.new(existing_flatmate_genders)
-    @listing = Listing.new(preferred_flatmate, existing_flatmates)
+    rent = determine_rent
+    @listing = Listing.new(preferred_flatmate, existing_flatmates, rent)
   end
 
   def determine_preferred_flatmate_genders
@@ -58,17 +59,26 @@ class ListingParser
     preferred_flatmate_ages
   end
 
+  def determine_rent
+    full_listing_nodes = @document.xpath('.//table[contains(@class, "fulllistingfigures")]')
+    raw_rent_text = full_listing_nodes[0].children[0].children[2].children[2].children[0].text
+    /\$(?<specific_rent_string>\d+) per Week/ =~ raw_rent_text
+    Integer(specific_rent_string, 10)
+  end
 end
 
 class Listing
+  attr_reader :rent
+
   def self.new_using_filename(listing_filename)
     listing_parser = ListingParser.new_using_filename(listing_filename)
     listing_parser.listing
   end
 
-  def initialize(preferred_flatmate, existing_flatmates)
+  def initialize(preferred_flatmate, existing_flatmates, rent)
     @preferred_flatmate = preferred_flatmate
     @existing_flatmates = existing_flatmates
+    @rent = rent
   end
 
   def genders_preferred_include?(gender)
