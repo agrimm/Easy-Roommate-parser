@@ -21,8 +21,10 @@ class ListingParser
     preferred_flatmate = Listing::PreferredFlatmate.new(preferred_flatmate_genders, preferred_flatmate_ages)
     existing_flatmate_genders = determine_existing_flatmate_genders
     existing_flatmates = Listing::ExistingFlatmates.new(existing_flatmate_genders)
+    # FIXME duplicating code in Person#initialize and ResultParser#find_people
+    suburb = determine_suburb
     rent = determine_rent
-    @listing = Listing.new(preferred_flatmate, existing_flatmates, rent)
+    @listing = Listing.new(preferred_flatmate, existing_flatmates, suburb, rent)
   end
 
   def determine_preferred_flatmate_genders
@@ -59,6 +61,13 @@ class ListingParser
     preferred_flatmate_ages
   end
 
+  def determine_suburb
+    area_node = @document.xpath('.//tr[contains(@id, "e_phMain_FullListing_AreaTr")]').children[-2].children[0]
+    area_text = area_node.text
+    suburb = /^([^,]+),[^,]+$/.match(area_text)[1]
+    suburb
+  end
+
   def determine_rent
     full_listing_nodes = @document.xpath('.//table[contains(@class, "fulllistingfigures")]')
     raw_rent_text = full_listing_nodes[0].children[0].children[2].children[2].children[0].text
@@ -68,16 +77,17 @@ class ListingParser
 end
 
 class Listing
-  attr_reader :rent
+  attr_reader :suburb, :rent
 
   def self.new_using_filename(listing_filename)
     listing_parser = ListingParser.new_using_filename(listing_filename)
     listing_parser.listing
   end
 
-  def initialize(preferred_flatmate, existing_flatmates, rent)
+  def initialize(preferred_flatmate, existing_flatmates, suburb, rent)
     @preferred_flatmate = preferred_flatmate
     @existing_flatmates = existing_flatmates
+    @suburb = suburb
     @rent = rent
   end
 
