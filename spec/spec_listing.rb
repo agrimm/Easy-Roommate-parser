@@ -1,4 +1,6 @@
+$:.push File.expand_path(File.dirname(__FILE__))
 $:.push File.expand_path(File.dirname(__FILE__) + '/../lib/easyroommate_parser')
+require "spec_helper"
 require "listing_parser"
 require "searcher"
 
